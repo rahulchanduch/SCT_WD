@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Stopwatch App</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #1e1e2f;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .stopwatch {
+      font-size: 3rem;
+      margin-bottom: 20px;
+    }
+
+    .buttons button {
+      margin: 0 10px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .buttons button:hover {
+      opacity: 0.8;
+    }
+
+    .start { background-color: #28a745; }
+    .pause { background-color: #ffc107; }
+    .reset { background-color: #dc3545; }
+    .lap { background-color: #17a2b8; }
+
+    .laps {
+      margin-top: 20px;
+      width: 300px;
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #444;
+      padding: 10px;
+      border-radius: 8px;
+      background: #2d2d3a;
+    }
+
+    .laps li {
+      margin-bottom: 5px;
+      border-bottom: 1px solid #444;
+      padding-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Stopwatch</h1>
+  <div class="stopwatch" id="display">00:00:00.000</div>
+
+  <div class="buttons">
+    <button class="start" onclick="start()">Start</button>
+    <button class="pause" onclick="pause()">Pause</button>
+    <button class="reset" onclick="reset()">Reset</button>
+    <button class="lap" onclick="lap()">Lap</button>
+  </div>
+
+  <ul class="laps" id="laps"></ul>
+
+  <script>
+    let startTime, updatedTime, difference, tInterval;
+    let running = false;
+    let display = document.getElementById("display");
+    let laps = document.getElementById("laps");
+
+    function start() {
+      if (!running) {
+        startTime = new Date().getTime() - (difference || 0);
+        tInterval = setInterval(updateTime, 10);
+        running = true;
+      }
+    }
+
+    function pause() {
+      if (running) {
+        clearInterval(tInterval);
+        difference = new Date().getTime() - startTime;
+        running = false;
+      }
+    }
+
+    function reset() {
+      clearInterval(tInterval);
+      display.innerHTML = "00:00:00.000";
+      difference = 0;
+      running = false;
+      laps.innerHTML = "";
+    }
+
+    function lap() {
+      if (running) {
+        const li = document.createElement("li");
+        li.textContent = display.textContent;
+        laps.appendChild(li);
+      }
+    }
+
+    function updateTime() {
+      updatedTime = new Date().getTime();
+      difference = updatedTime - startTime;
+
+      let hours = Math.floor(difference / (1000 * 60 * 60));
+      let minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+      let seconds = Math.floor((difference % (1000 * 60)) / 1000);
+      let milliseconds = Math.floor((difference % 1000));
+
+      display.textContent =
+        `${String(hours).padStart(2, '0')}:` +
+        `${String(minutes).padStart(2, '0')}:` +
+        `${String(seconds).padStart(2, '0')}.` +
+        `${String(milliseconds).padStart(3, '0')}`;
+    }
+  </script>
+
+</body>
+</html>
